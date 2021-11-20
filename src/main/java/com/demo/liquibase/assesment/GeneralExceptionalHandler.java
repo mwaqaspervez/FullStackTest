@@ -1,4 +1,4 @@
-package com.demo.truckitin.advice;
+package com.demo.liquibase.assesment;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
