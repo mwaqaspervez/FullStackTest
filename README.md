@@ -1,4 +1,4 @@
-# Truck it in
+# Assessment test
 
 This project contains the assessment test created by Muhammad Waqas
 Java version used to develop this project is Java 14.
