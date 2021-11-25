@@ -1,8 +1,7 @@
 package com.demo.assessment.service;
 
-import com.demo.assessment.model.DeliveryDetails;
-import com.demo.assessment.repository.DeliveryDetailRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.demo.assessment.model.entities.TicketDetail;
+import com.demo.assessment.repository.TicketDetailRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -11,19 +10,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class DeliveryDetailService {
+public class TicketDetailService {
+    private final TicketDetailRepository ticketDetailRepo;
 
-    @Autowired
-    private DeliveryDetailRepository orderDetailRepo;
+    public TicketDetailService(TicketDetailRepository ticketDetailRepo) {
+        this.ticketDetailRepo = ticketDetailRepo;
+    }
 
-    public List<DeliveryDetails> getOrderDetails(int page, int size) {
-        Page<DeliveryDetails> orderPage =
-                orderDetailRepo.findAll(PageRequest.of(page, size));
+    /**
+     * Returns the tickets defined by the page and size of the page
+     * @param page the page to return
+     * @param size The page size to return
+     * @return {@link List<TicketDetail>} object containing the ticket
+     * list containing the ticket information.
+     */
+    public List<TicketDetail> getTicketDetails(int page, int size) {
+        Page<TicketDetail> orderPage =
+                ticketDetailRepo.findAll(PageRequest.of(page, size));
 
         if (orderPage.isEmpty()) {
             return new ArrayList<>();
         }
-
         return orderPage.toList();
     }
 }

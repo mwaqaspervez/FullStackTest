@@ -1,2 +1,5 @@
-package com.demo.assessment.model.types;public enum CustomerType {
+package com.demo.assessment.model.types;
+
+public enum CustomerType {
+    VIP, LOYAL, NEW
 }

@@ -1,13 +1,20 @@
 package com.demo.assessment.repository;
 
-import com.demo.assessment.model.DeliveryDetails;
+import com.demo.assessment.model.entities.DeliveryDetails;
 import com.demo.assessment.model.types.DeliveryStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface OrderDetailRepository extends JpaRepository<Integer, DeliveryDetails> {
+public interface DeliveryDetailRepository extends JpaRepository<DeliveryDetails, Integer> {
 
-    Optional<List<DeliveryDetails>> findByDeliveryStatusIn(List<DeliveryStatus> deliveryStatus);
+    @Query(value = "select new DeliveryDetails(dd.id, dd.customerType, dd.deliveryStatus, dd.expectedDeliveryTime," +
+            "dd.currentDistance, dd.riderRating, dd.timeToPrepare, dd.timeToReach) " +
+            "from DeliveryDetails dd " +
+            "left join TicketDetail td " +
+            "on dd.id = td.deliveryDetails " +
+            "where td.id is NULL and " +
+            "dd.deliveryStatus IN (:deliveryStatus)")
+    List<DeliveryDetails> findByDeliveryStatusAndTicket(List<DeliveryStatus> deliveryStatus);
 }

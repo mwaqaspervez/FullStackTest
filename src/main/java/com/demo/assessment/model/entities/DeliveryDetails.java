@@ -1,14 +1,15 @@
-package com.demo.assessment.model;
+package com.demo.assessment.model.entities;
 
 import com.demo.assessment.model.types.CustomerType;
 import com.demo.assessment.model.types.DeliveryStatus;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "delivery_details")
-public class DeliveryDetails {
+public class DeliveryDetails implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
@@ -36,6 +37,20 @@ public class DeliveryDetails {
     @Column(name = "time_to_reach_destination_in_seconds")
     private int timeToReach;
 
+
+    public DeliveryDetails(int id, CustomerType customerType, DeliveryStatus deliveryStatus, ZonedDateTime expectedDeliveryTime,
+                           int currentDistance, int riderRating, int timeToPrepare, int timeToReach) {
+        this.id = id;
+        this.customerType = customerType;
+        this.deliveryStatus = deliveryStatus;
+        this.expectedDeliveryTime = expectedDeliveryTime;
+        this.currentDistance = currentDistance;
+        this.riderRating = riderRating;
+        this.timeToPrepare = timeToPrepare;
+        this.timeToReach = timeToReach;
+    }
+
+    public DeliveryDetails(){}
 
     public int getId() {
         return id;

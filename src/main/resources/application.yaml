@@ -3,3 +3,30 @@ server:
 
 file:
   name: products.csv
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        show_sql: false
+        use_sql_comments: false
+        format_sql: false
+    hibernate:
+      ddl-auto: update
+  profiles:
+    active: dev
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:h2:file:~/assessment-db;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:data.sql'
+    username: admin
+    password: admin
+    driverClassName: org.h2.Driver
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+  h2:
+    console:
+      enabled: true
+    jpa:
+      database-platform: io.github.jhipster.domain.util.FixedH2Dialect
+      show-sql: true

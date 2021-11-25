@@ -1,4 +1,4 @@
-package com.demo.liquibase.config;
+package com.demo.assessment.config;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
