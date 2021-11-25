@@ -5,5 +5,5 @@ COPY pom.xml /home/app
 
 RUN mvn -f /home/app/pom.xml clean package
 COPY target/assessment-0.0.1-SNAPSHOT.jar assessment.jar
-EXPOSE 8080
+EXPOSE 8081
 ENTRYPOINT ["java","-jar","/assessment.jar"]
