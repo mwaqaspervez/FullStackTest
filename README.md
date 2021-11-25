@@ -6,8 +6,11 @@ Java version used to develop this project is Java 14.
 ## To build with docker
 
 Use
+
+```
 docker build --tag=application:latest .
 docker run -p8081:8082 application:latest
+```
 
 ## Build & Run with Maven
 
