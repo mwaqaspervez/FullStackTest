@@ -4,6 +4,10 @@ server:
 file:
   name: products.csv
 
+logging:
+  level:
+    root: INFO
+
 spring:
   jpa:
     properties:
@@ -14,10 +18,10 @@ spring:
     hibernate:
       ddl-auto: update
   profiles:
-    active: dev
+    active: classpath:schema.sql, classpath:data.sql
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:h2:file:~/assessment-db;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:data.sql'
+    url: jdbc:h2:file:~/assessment-db;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:schema.sql'\;RUNSCRIPT FROM 'classpath:data.sql'
     username: admin
     password: admin
     driverClassName: org.h2.Driver

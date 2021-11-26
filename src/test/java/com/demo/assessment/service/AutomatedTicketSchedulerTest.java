@@ -52,22 +52,24 @@ class AutomatedTicketSchedulerTest {
 
     @Test
     void estimatedTimeIsNotOver() {
+        List<DeliveryDetails> list = new ArrayList<>();
+        list.add(new DeliveryDetails(1, CustomerType.VIP, DeliveryStatus.ORDER_PICKED_UP,
+                ZonedDateTime.now().plusMinutes(20), 50, 5, 50, 50));
+
         Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
-                .thenReturn(List.of(
-                        new DeliveryDetails(1, CustomerType.VIP, DeliveryStatus.ORDER_PICKED_UP,
-                                ZonedDateTime.now().plusMinutes(20), 50, 5, 50, 50)
-                ));
+                .thenReturn(list);
         scheduler.runScheduler();
         verify(ticketDetailRepo, times(0)).save(any());
     }
 
     @Test
     void estimatedTimeIsOverAndCustomerIsVip() {
+        List<DeliveryDetails> list = new ArrayList<>();
+        list.add(new DeliveryDetails(1, CustomerType.VIP, DeliveryStatus.ORDER_PICKED_UP,
+                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50));
+
         Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
-                .thenReturn(List.of(
-                        new DeliveryDetails(1, CustomerType.VIP, DeliveryStatus.ORDER_PICKED_UP,
-                                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50)
-                ));
+                .thenReturn(list);
         scheduler.runScheduler();
 
         verify(ticketDetailRepo, times(1)).save(argThat((TicketDetail o) ->
@@ -77,11 +79,12 @@ class AutomatedTicketSchedulerTest {
 
     @Test
     void estimatedTimeIsOverAndCustomerIsNew() {
+        List<DeliveryDetails> list = new ArrayList<>();
+        list.add(new DeliveryDetails(1, CustomerType.NEW, DeliveryStatus.ORDER_PICKED_UP,
+                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50));
+
         Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
-                .thenReturn(List.of(
-                        new DeliveryDetails(1, CustomerType.NEW, DeliveryStatus.ORDER_PICKED_UP,
-                                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50)
-                ));
+                .thenReturn(list);
         scheduler.runScheduler();
 
         verify(ticketDetailRepo, times(1)).save(argThat((TicketDetail o) ->
@@ -91,11 +94,12 @@ class AutomatedTicketSchedulerTest {
 
     @Test
     void estimatedTimeIsOverAndCustomerIsLoyal() {
+        List<DeliveryDetails> list = new ArrayList<>();
+        list.add( new DeliveryDetails(1, CustomerType.LOYAL, DeliveryStatus.ORDER_PICKED_UP,
+                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50));
+
         Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
-                .thenReturn(List.of(
-                        new DeliveryDetails(1, CustomerType.LOYAL, DeliveryStatus.ORDER_PICKED_UP,
-                                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50)
-                ));
+                .thenReturn(list);
         scheduler.runScheduler();
 
         verify(ticketDetailRepo, times(1)).save(argThat((TicketDetail o) ->
