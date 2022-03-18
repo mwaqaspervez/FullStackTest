@@ -1,7 +1,7 @@
 package com.demo.assessment.model.entities;
 
 import com.demo.assessment.model.types.CustomerType;
-import com.demo.assessment.model.types.DeliveryPriority;
+import com.demo.assessment.model.types.TicketPriorityType;
 
 import javax.persistence.*;
 
@@ -13,15 +13,15 @@ public class TicketPriority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "delivery_priority")
-    private DeliveryPriority deliveryPriority;
+    @Column(name = "ticket_priority")
+    private TicketPriorityType ticketPriority;
 
     @Column(name = "customer_type")
     private CustomerType customerType;
 
-    public TicketPriority(int id, DeliveryPriority deliveryPriority, CustomerType customerType) {
+    public TicketPriority(int id, TicketPriorityType ticketPriority, CustomerType customerType) {
         this.id = id;
-        this.deliveryPriority = deliveryPriority;
+        this.ticketPriority = ticketPriority;
         this.customerType = customerType;
     }
 
@@ -36,12 +36,12 @@ public class TicketPriority {
         this.id = id;
     }
 
-    public DeliveryPriority getDeliveryPriority() {
-        return deliveryPriority;
+    public TicketPriorityType getTicketPriority() {
+        return ticketPriority;
     }
 
-    public void setDeliveryPriority(DeliveryPriority deliveryPriority) {
-        this.deliveryPriority = deliveryPriority;
+    public void setTicketPriority(TicketPriorityType ticketPriority) {
+        this.ticketPriority = ticketPriority;
     }
 
     public CustomerType getCustomerType() {

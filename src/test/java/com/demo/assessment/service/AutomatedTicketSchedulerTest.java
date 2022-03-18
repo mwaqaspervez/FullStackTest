@@ -1,10 +1,12 @@
 package com.demo.assessment.service;
 
+import com.demo.assessment.model.DeliveryDetailsDto;
 import com.demo.assessment.model.entities.DeliveryDetails;
 import com.demo.assessment.model.entities.TicketDetail;
 import com.demo.assessment.model.types.CustomerType;
 import com.demo.assessment.model.types.DeliveryPriority;
 import com.demo.assessment.model.types.DeliveryStatus;
+import com.demo.assessment.model.types.TicketPriorityType;
 import com.demo.assessment.repository.DeliveryDetailRepository;
 import com.demo.assessment.repository.TicketDetailRepository;
 import com.demo.assessment.schedular.AutomatedTicketScheduler;
@@ -58,9 +60,9 @@ class AutomatedTicketSchedulerTest {
 
     @Test
     void estimatedTimeIsNotOver() {
-        List<DeliveryDetails> list = new ArrayList<>();
-        list.add(new DeliveryDetails(1, CustomerType.VIP, DeliveryStatus.ORDER_PICKED_UP,
-                ZonedDateTime.now().plusMinutes(20), 50, 5, 50, 50));
+        List<DeliveryDetailsDto> list = new ArrayList<>();
+        list.add(new DeliveryDetailsDto(1, CustomerType.VIP, DeliveryStatus.ORDER_PICKED_UP, DeliveryPriority.HIGHEST,
+                ZonedDateTime.now().plusMinutes(20), 50, 5, 50, 50, 1, TicketPriorityType.LOW));
 
         Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
                 .thenReturn(list);
@@ -69,53 +71,81 @@ class AutomatedTicketSchedulerTest {
     }
 
     @Test
+    void expectedDeliveryTimeIsOver() {
+        List<DeliveryDetailsDto> list = new ArrayList<>();
+        list.add(new DeliveryDetailsDto(1, CustomerType.VIP, DeliveryStatus.ORDER_PICKED_UP, DeliveryPriority.HIGHEST,
+                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50, 1, TicketPriorityType.LOW));
+
+        Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
+                .thenReturn(list);
+        scheduler.runScheduler();
+        verify(repository, times(1)).save(argThat((DeliveryDetails o) ->
+                o.getDeliveryPriority() == DeliveryPriority.HIGHEST
+        ));
+    }
+
+    @Test
+    void expectedDeliveryTimeIsNotOver() {
+        List<DeliveryDetailsDto> list = new ArrayList<>();
+        list.add(new DeliveryDetailsDto(1, CustomerType.VIP, DeliveryStatus.ORDER_PICKED_UP, DeliveryPriority.HIGHEST,
+                ZonedDateTime.now().plusMinutes(20), 50, 5, 50, 50, 1, TicketPriorityType.LOW));
+
+        Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
+                .thenReturn(list);
+        scheduler.runScheduler();
+        verify(repository, times(0)).save(argThat((DeliveryDetails o) ->
+                o.getDeliveryPriority() == DeliveryPriority.HIGHEST
+        ));
+    }
+
+    @Test
     void estimatedTimeIsOverAndCustomerIsVip() {
-        List<DeliveryDetails> list = new ArrayList<>();
-        list.add(new DeliveryDetails(1, CustomerType.VIP, DeliveryStatus.ORDER_PICKED_UP,
-                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50));
+        List<DeliveryDetailsDto> list = new ArrayList<>();
+        list.add(new DeliveryDetailsDto(1, CustomerType.VIP, DeliveryStatus.ORDER_PICKED_UP, DeliveryPriority.HIGHEST,
+                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50, 0, null));
 
         Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
                 .thenReturn(list);
         Mockito.when(priorityStrategy.getPriority(any()))
-                .thenReturn(DeliveryPriority.HIGHEST);
+                .thenReturn(TicketPriorityType.HIGHEST);
         scheduler.runScheduler();
 
         verify(ticketDetailRepo, times(1)).save(argThat((TicketDetail o) ->
-                o.getDeliveryPriority() == DeliveryPriority.HIGHEST && o.getDeliveryDetails().getId() == 1
+                o.getTicketPriority() == TicketPriorityType.HIGHEST && o.getDeliveryDetails().getId() == 1
         ));
     }
 
     @Test
     void estimatedTimeIsOverAndCustomerIsNew() {
-        List<DeliveryDetails> list = new ArrayList<>();
-        list.add(new DeliveryDetails(1, CustomerType.NEW, DeliveryStatus.ORDER_PICKED_UP,
-                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50));
+        List<DeliveryDetailsDto> list = new ArrayList<>();
+        list.add(new DeliveryDetailsDto(1, CustomerType.NEW, DeliveryStatus.ORDER_PICKED_UP, DeliveryPriority.HIGH,
+                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50, 0, null));
 
         Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
                 .thenReturn(list);
         Mockito.when(priorityStrategy.getPriority(any()))
-                .thenReturn(DeliveryPriority.MEDIUM);
+                .thenReturn(TicketPriorityType.LOW);
         scheduler.runScheduler();
 
         verify(ticketDetailRepo, times(1)).save(argThat((TicketDetail o) ->
-                o.getDeliveryPriority() == DeliveryPriority.MEDIUM && o.getDeliveryDetails().getId() == 1
+                o.getTicketPriority() == TicketPriorityType.LOW && o.getDeliveryDetails().getId() == 1
         ));
     }
 
     @Test
     void estimatedTimeIsOverAndCustomerIsLoyal() {
-        List<DeliveryDetails> list = new ArrayList<>();
-        list.add( new DeliveryDetails(1, CustomerType.LOYAL, DeliveryStatus.ORDER_PICKED_UP,
-                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50));
+        List<DeliveryDetailsDto> list = new ArrayList<>();
+        list.add(new DeliveryDetailsDto(1, CustomerType.LOYAL, DeliveryStatus.ORDER_PICKED_UP, DeliveryPriority.HIGH,
+                ZonedDateTime.now().minusMinutes(20), 50, 5, 50, 50, 0, null));
 
         Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
                 .thenReturn(list);
         Mockito.when(priorityStrategy.getPriority(any()))
-                        .thenReturn(DeliveryPriority.HIGH);
+                .thenReturn(TicketPriorityType.HIGH);
         scheduler.runScheduler();
 
         verify(ticketDetailRepo, times(1)).save(argThat((TicketDetail o) ->
-                o.getDeliveryPriority() == DeliveryPriority.HIGH && o.getDeliveryDetails().getId() == 1
+                o.getTicketPriority() == TicketPriorityType.HIGH && o.getDeliveryDetails().getId() == 1
         ));
     }
 }

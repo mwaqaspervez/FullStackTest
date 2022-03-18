@@ -6,6 +6,7 @@ import com.demo.assessment.model.entities.TicketDetail;
 import com.demo.assessment.model.types.CustomerType;
 import com.demo.assessment.model.types.DeliveryPriority;
 import com.demo.assessment.model.types.DeliveryStatus;
+import com.demo.assessment.model.types.TicketPriorityType;
 import com.demo.assessment.repository.TicketDetailRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,8 +54,8 @@ class TicketDetailServiceTest {
     @Test
     void getTicketDetails_ticketRecords() {
         Page<TicketDetail> pageable = new PageImpl<>(List.of(new TicketDetail(
-                1, DeliveryPriority.HIGH, new DeliveryDetails(
-                1, CustomerType.LOYAL, DeliveryStatus.ORDER_PREPARING,
+                1, TicketPriorityType.HIGH, new DeliveryDetails(
+                1, CustomerType.LOYAL, DeliveryStatus.ORDER_PREPARING, DeliveryPriority.HIGH,
                 ZonedDateTime.now().plus(5, ChronoUnit.MINUTES),
                 5, 5, 5, 5)
         )), PageRequest.of(0, 50), 1);

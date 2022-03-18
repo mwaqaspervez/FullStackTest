@@ -1,6 +1,6 @@
 package com.demo.assessment.model.types;
 
-public enum DeliveryPriority {
+public enum TicketPriorityType {
     LOW,
     HIGH,
     HIGHEST

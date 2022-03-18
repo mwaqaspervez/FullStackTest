@@ -1,6 +1,7 @@
 package com.demo.assessment.model.entities;
 
 import com.demo.assessment.model.types.CustomerType;
+import com.demo.assessment.model.types.DeliveryPriority;
 import com.demo.assessment.model.types.DeliveryStatus;
 
 import javax.persistence.*;
@@ -36,9 +37,11 @@ public class DeliveryDetails implements Serializable {
     @Column(name = "time_to_reach_destination_in_seconds")
     private int timeToReach;
 
+    @Column(name = "delivery_priority")
+    private DeliveryPriority deliveryPriority;
 
-    public DeliveryDetails(int id, CustomerType customerType, DeliveryStatus deliveryStatus, ZonedDateTime expectedDeliveryTime,
-                           int currentDistance, int riderRating, int timeToPrepare, int timeToReach) {
+    public DeliveryDetails(int id, CustomerType customerType, DeliveryStatus deliveryStatus, DeliveryPriority deliveryPriority,
+                           ZonedDateTime expectedDeliveryTime, int currentDistance, int riderRating, int timeToPrepare, int timeToReach) {
         this.id = id;
         this.customerType = customerType;
         this.deliveryStatus = deliveryStatus;
@@ -47,9 +50,19 @@ public class DeliveryDetails implements Serializable {
         this.riderRating = riderRating;
         this.timeToPrepare = timeToPrepare;
         this.timeToReach = timeToReach;
+        this.deliveryPriority = deliveryPriority;
     }
 
-    public DeliveryDetails(){}
+    public DeliveryPriority getDeliveryPriority() {
+        return deliveryPriority;
+    }
+
+    public void setDeliveryPriority(DeliveryPriority priority) {
+        this.deliveryPriority = priority;
+    }
+
+    public DeliveryDetails() {
+    }
 
     public int getId() {
         return id;

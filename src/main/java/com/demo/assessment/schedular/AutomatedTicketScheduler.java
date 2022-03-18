@@ -2,6 +2,8 @@ package com.demo.assessment.schedular;
 
 import com.demo.assessment.model.entities.DeliveryDetails;
 import com.demo.assessment.model.entities.TicketDetail;
+import com.demo.assessment.model.DeliveryDetailsDto;
+import com.demo.assessment.model.types.DeliveryPriority;
 import com.demo.assessment.model.types.DeliveryStatus;
 import com.demo.assessment.repository.DeliveryDetailRepository;
 import com.demo.assessment.repository.TicketDetailRepository;
@@ -36,8 +38,8 @@ public class AutomatedTicketScheduler {
      */
     @Scheduled(cron = "${ticket.cron}")
     public void runScheduler() {
-        LOGGER.info("Starting automated ticker scheduler");
-        List<DeliveryDetails> inProgressOrders =
+        LOGGER.info("Starting automated ticket scheduler");
+        List<DeliveryDetailsDto> inProgressOrders =
                 orderDetailRepo.findByDeliveryStatusAndTicket(DeliveryStatus.getInProgressStatus());
 
         if (inProgressOrders == null || inProgressOrders.isEmpty()) {
@@ -46,16 +48,22 @@ public class AutomatedTicketScheduler {
 
         LOGGER.info("Found {} in progress order. Processing", inProgressOrders.size());
         inProgressOrders.forEach(order -> {
-            ZonedDateTime estimatedTime = ZonedDateTime.now()
-                    .plusSeconds(order.getTimeToPrepare())
-                    .plusSeconds(order.getTimeToReach());
+            DeliveryDetails deliveryDetails = order.getDeliveryDetails();
+            if (deliveryDetails.getExpectedDeliveryTime().isBefore(ZonedDateTime.now())) {
+                deliveryDetails.setDeliveryPriority(DeliveryPriority.HIGHEST);
+                orderDetailRepo.save(deliveryDetails);
+            }
 
-            if (estimatedTime.isAfter(order.getExpectedDeliveryTime())) {
+            ZonedDateTime estimatedTime = ZonedDateTime.now()
+                    .plusSeconds(deliveryDetails.getTimeToPrepare())
+                    .plusSeconds(deliveryDetails.getTimeToReach());
+
+            if (estimatedTime.isAfter(deliveryDetails.getExpectedDeliveryTime())) {
                 // Raise a ticket.
-                LOGGER.info("Raising a ticket for customer type {}", order.getCustomerType());
+                LOGGER.info("Raising a ticket for customer type {}", deliveryDetails.getCustomerType());
                 TicketDetail ticketDetail = new TicketDetail();
-                ticketDetail.setDeliveryDetails(order);
-                ticketDetail.setDeliveryPriority(priorityStrategy.getPriority(order.getCustomerType()));
+                ticketDetail.setDeliveryDetails(deliveryDetails);
+                ticketDetail.setTicketPriority(priorityStrategy.getPriority(deliveryDetails.getCustomerType()));
                 ticketDetailRepo.save(ticketDetail);
             }
         });

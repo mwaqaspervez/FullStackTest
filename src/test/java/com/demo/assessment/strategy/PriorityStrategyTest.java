@@ -2,7 +2,7 @@ package com.demo.assessment.strategy;
 
 import com.demo.assessment.model.entities.TicketPriority;
 import com.demo.assessment.model.types.CustomerType;
-import com.demo.assessment.model.types.DeliveryPriority;
+import com.demo.assessment.model.types.TicketPriorityType;
 import com.demo.assessment.repository.TicketPriorityRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,31 +25,31 @@ class PriorityStrategyTest {
     void init() {
         MockitoAnnotations.initMocks(this);
         Mockito.when(ticketPriorityRepository.findAll())
-                .thenReturn(List.of(new TicketPriority(1, DeliveryPriority.MEDIUM, CustomerType.NEW),
-                        new TicketPriority(2, DeliveryPriority.HIGH, CustomerType.LOYAL),
-                        new TicketPriority(3, DeliveryPriority.HIGHEST, CustomerType.VIP)));
+                .thenReturn(List.of(new TicketPriority(1, TicketPriorityType.LOW, CustomerType.NEW),
+                        new TicketPriority(2, TicketPriorityType.HIGH, CustomerType.LOYAL),
+                        new TicketPriority(3, TicketPriorityType.HIGHEST, CustomerType.VIP)));
         priorityStrategy = new PriorityStrategy(ticketPriorityRepository);
     }
 
     @Test
     void getPriority_ForLoyal() {
-        DeliveryPriority priority = priorityStrategy.getPriority(CustomerType.LOYAL);
+        TicketPriorityType priority = priorityStrategy.getPriority(CustomerType.LOYAL);
 
-        assertEquals(DeliveryPriority.HIGH, priority);
+        assertEquals(TicketPriorityType.HIGH, priority);
     }
 
     @Test
     void getPriority_ForNew() {
-        DeliveryPriority priority = priorityStrategy.getPriority(CustomerType.NEW);
+        TicketPriorityType priority = priorityStrategy.getPriority(CustomerType.NEW);
 
-        assertEquals(DeliveryPriority.MEDIUM, priority);
+        assertEquals(TicketPriorityType.LOW, priority);
     }
 
     @Test
     void getPriority_ForVIP() {
-        DeliveryPriority priority = priorityStrategy.getPriority(CustomerType.VIP);
+        TicketPriorityType priority = priorityStrategy.getPriority(CustomerType.VIP);
 
-        assertEquals(DeliveryPriority.HIGHEST, priority);
+        assertEquals(TicketPriorityType.HIGHEST, priority);
     }
 
     @Test
