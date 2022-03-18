@@ -8,6 +8,7 @@ import com.demo.assessment.model.types.DeliveryStatus;
 import com.demo.assessment.repository.DeliveryDetailRepository;
 import com.demo.assessment.repository.TicketDetailRepository;
 import com.demo.assessment.schedular.AutomatedTicketScheduler;
+import com.demo.assessment.strategy.PriorityStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -38,9 +39,13 @@ class AutomatedTicketSchedulerTest {
     @Mock
     private TicketDetailRepository ticketDetailRepo;
 
+    @Mock
+    private PriorityStrategy priorityStrategy;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
+        scheduler = new AutomatedTicketScheduler(repository, ticketDetailRepo, priorityStrategy);
     }
 
     @Test
@@ -71,6 +76,8 @@ class AutomatedTicketSchedulerTest {
 
         Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
                 .thenReturn(list);
+        Mockito.when(priorityStrategy.getPriority(any()))
+                .thenReturn(DeliveryPriority.HIGHEST);
         scheduler.runScheduler();
 
         verify(ticketDetailRepo, times(1)).save(argThat((TicketDetail o) ->
@@ -86,6 +93,8 @@ class AutomatedTicketSchedulerTest {
 
         Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
                 .thenReturn(list);
+        Mockito.when(priorityStrategy.getPriority(any()))
+                .thenReturn(DeliveryPriority.MEDIUM);
         scheduler.runScheduler();
 
         verify(ticketDetailRepo, times(1)).save(argThat((TicketDetail o) ->
@@ -101,6 +110,8 @@ class AutomatedTicketSchedulerTest {
 
         Mockito.when(repository.findByDeliveryStatusAndTicket(any()))
                 .thenReturn(list);
+        Mockito.when(priorityStrategy.getPriority(any()))
+                        .thenReturn(DeliveryPriority.HIGH);
         scheduler.runScheduler();
 
         verify(ticketDetailRepo, times(1)).save(argThat((TicketDetail o) ->
