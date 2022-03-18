@@ -11,17 +11,18 @@ logging:
 spring:
   jpa:
     properties:
-      hibernate:
+        dialect: io.github.jhipster.domain.util.FixedH2Dialect
         show_sql: false
         use_sql_comments: false
         format_sql: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+      dialect: h2
   profiles:
-    active: classpath:schema.sql, classpath:data.sql
+    active: dev
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:h2:file:~/assessment-db;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:schema.sql'\;RUNSCRIPT FROM 'classpath:data.sql'
+    url: jdbc:h2:file:./assessment;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:schema.sql'\;RUNSCRIPT FROM 'classpath:seed.sql';
     username: admin
     password: admin
     driverClassName: org.h2.Driver
@@ -34,3 +35,6 @@ spring:
     jpa:
       database-platform: io.github.jhipster.domain.util.FixedH2Dialect
       show-sql: true
+
+ticket:
+  cron: '0 */1 * * * *'

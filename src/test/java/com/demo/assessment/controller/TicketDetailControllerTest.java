@@ -1,5 +1,7 @@
 package com.demo.assessment.controller;
 
+import com.demo.assessment.config.GeneralExceptionalHandler;
+import com.demo.assessment.model.TicketDetailResponse;
 import com.demo.assessment.service.TicketDetailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,14 +36,34 @@ class TicketDetailControllerTest {
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(ticketDetailController)
+                .setControllerAdvice(new GeneralExceptionalHandler())
                 .build();
     }
 
     @Test
-    void getTickets() throws Exception {
+    void getTickets_WithInvalidPage() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/tickets")
+                        .queryParam("page", "-2")
+                        .queryParam("pageSize", "50")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
 
+    @Test
+    void getTickets_WithInvalidPageSize() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/tickets")
+                        .queryParam("page", "1")
+                        .queryParam("pageSize", "5000")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void getTickets() throws Exception {
         Mockito.when(ticketDetailService.getTicketDetails(anyInt(), anyInt()))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(new TicketDetailResponse(new ArrayList<>(), 0 , 0));
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/tickets")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -50,9 +72,8 @@ class TicketDetailControllerTest {
 
     @Test
     void getTicketsWithPage() throws Exception {
-
         Mockito.when(ticketDetailService.getTicketDetails(2, 50))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(new TicketDetailResponse(new ArrayList<>(), 1, 10));
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/tickets")
                         .param("page", "2")
                         .param("pageSize", "50")
@@ -60,5 +81,4 @@ class TicketDetailControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
-
 }

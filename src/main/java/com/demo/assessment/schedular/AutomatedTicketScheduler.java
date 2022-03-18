@@ -1,11 +1,13 @@
-package com.demo.assessment.service;
+package com.demo.assessment.schedular;
 
 import com.demo.assessment.model.entities.DeliveryDetails;
 import com.demo.assessment.model.entities.TicketDetail;
-import com.demo.assessment.model.types.DeliveryPriority;
 import com.demo.assessment.model.types.DeliveryStatus;
 import com.demo.assessment.repository.DeliveryDetailRepository;
 import com.demo.assessment.repository.TicketDetailRepository;
+import com.demo.assessment.strategy.PriorityStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -16,11 +18,15 @@ import java.util.List;
 public class AutomatedTicketScheduler {
     private final DeliveryDetailRepository orderDetailRepo;
     private final TicketDetailRepository ticketDetailRepo;
+    private final PriorityStrategy priorityStrategy;
+    private final Logger LOGGER = LoggerFactory.getLogger(AutomatedTicketScheduler.class.getName());
 
     public AutomatedTicketScheduler(DeliveryDetailRepository orderDetailRepo,
-                                    TicketDetailRepository ticketDetailRepo) {
+                                    TicketDetailRepository ticketDetailRepo,
+                                    PriorityStrategy priorityStrategy) {
         this.orderDetailRepo = orderDetailRepo;
         this.ticketDetailRepo = ticketDetailRepo;
+        this.priorityStrategy = priorityStrategy;
     }
 
     /**
@@ -28,8 +34,9 @@ public class AutomatedTicketScheduler {
      * and checks if the estimated time has passed.
      * Creates a ticket if delivery time is passed.
      */
-    @Scheduled(fixedDelay = 30000L)
-    void runScheduler() {
+    @Scheduled(cron = "${ticket.cron}")
+    public void runScheduler() {
+        LOGGER.info("Starting automated ticker scheduler");
         List<DeliveryDetails> inProgressOrders =
                 orderDetailRepo.findByDeliveryStatusAndTicket(DeliveryStatus.getInProgressStatus());
 
@@ -37,33 +44,18 @@ public class AutomatedTicketScheduler {
             return;
         }
 
+        LOGGER.info("Found {} in progress order. Processing", inProgressOrders.size());
         inProgressOrders.forEach(order -> {
-
             ZonedDateTime estimatedTime = ZonedDateTime.now()
                     .plusSeconds(order.getTimeToPrepare())
                     .plusSeconds(order.getTimeToReach());
+
             if (estimatedTime.isAfter(order.getExpectedDeliveryTime())) {
                 // Raise a ticket.
+                LOGGER.info("Raising a ticket for customer type {}", order.getCustomerType());
                 TicketDetail ticketDetail = new TicketDetail();
                 ticketDetail.setDeliveryDetails(order);
-
-
-                DeliveryPriority priority;
-                switch (order.getCustomerType()) {
-                    case VIP:
-                        priority = DeliveryPriority.HIGHEST;
-                        break;
-                    case LOYAL:
-                        priority = DeliveryPriority.HIGH;
-                        break;
-                    case NEW:
-                        priority = DeliveryPriority.MEDIUM;
-                        break;
-                    default:
-                        throw new IllegalArgumentException();
-                }
-                ticketDetail.setDeliveryPriority(priority);
-
+                ticketDetail.setDeliveryPriority(priorityStrategy.getPriority(order.getCustomerType()));
                 ticketDetailRepo.save(ticketDetail);
             }
         });

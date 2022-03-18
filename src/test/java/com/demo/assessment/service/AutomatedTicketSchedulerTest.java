@@ -7,6 +7,7 @@ import com.demo.assessment.model.types.DeliveryPriority;
 import com.demo.assessment.model.types.DeliveryStatus;
 import com.demo.assessment.repository.DeliveryDetailRepository;
 import com.demo.assessment.repository.TicketDetailRepository;
+import com.demo.assessment.schedular.AutomatedTicketScheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

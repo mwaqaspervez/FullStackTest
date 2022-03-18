@@ -1,12 +1,13 @@
 package com.demo.assessment.model.entities;
 
+import com.demo.assessment.model.types.CustomerType;
 import com.demo.assessment.model.types.DeliveryPriority;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ticket_detail")
-public class TicketDetail {
+@Table(name = "ticket_priority")
+public class TicketPriority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,17 +16,16 @@ public class TicketDetail {
     @Column(name = "delivery_priority")
     private DeliveryPriority deliveryPriority;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "delivery_details_id")
-    private DeliveryDetails deliveryDetails;
+    @Column(name = "customer_type")
+    private CustomerType customerType;
 
-    public TicketDetail(int id, DeliveryPriority deliveryPriority, DeliveryDetails deliveryDetails) {
+    public TicketPriority(int id, DeliveryPriority deliveryPriority, CustomerType customerType) {
         this.id = id;
         this.deliveryPriority = deliveryPriority;
-        this.deliveryDetails = deliveryDetails;
+        this.customerType = customerType;
     }
 
-    public TicketDetail() {
+    public TicketPriority() {
     }
 
     public int getId() {
@@ -44,11 +44,11 @@ public class TicketDetail {
         this.deliveryPriority = deliveryPriority;
     }
 
-    public DeliveryDetails getDeliveryDetails() {
-        return deliveryDetails;
+    public CustomerType getCustomerType() {
+        return customerType;
     }
 
-    public void setDeliveryDetails(DeliveryDetails deliveryDetails) {
-        this.deliveryDetails = deliveryDetails;
+    public void setCustomerType(CustomerType customerType) {
+        this.customerType = customerType;
     }
 }

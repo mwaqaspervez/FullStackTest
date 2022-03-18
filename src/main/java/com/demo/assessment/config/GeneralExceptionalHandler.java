@@ -17,4 +17,18 @@ public class GeneralExceptionalHandler {
                 .body(ex.getMessage());
     }
 
+    @ExceptionHandler(value = BadArgumentException.class)
+    public ResponseEntity<Object> handleUnprocessedMsgException(BadArgumentException ex, HttpServletRequest request) {
+        return ResponseEntity.badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<Object> handleUnprocessedMsgException(Exception ex, HttpServletRequest request) {
+        return ResponseEntity.badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ex.getMessage());
+    }
+
 }

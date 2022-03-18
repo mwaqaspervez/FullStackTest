@@ -1,5 +1,6 @@
 DELETE FROM ticket_detail;
 DELETE FROM delivery_details;
+DELETE FROM ticket_priority;
 DELETE FROM app_user;
 
 INSERT INTO delivery_details (id, customer_type,delivery_status,expected_delivery_time,
@@ -34,6 +35,9 @@ INSERT INTO delivery_details (id, customer_type,delivery_status,expected_deliver
 current_distance_from_destination_in_meters,rider_rating,mean_time_to_prepare_food_in_seconds,
 time_to_reach_destination_in_seconds) VALUES (8, 0, 0,DATEADD('ss',4330, CURRENT_TIMESTAMP),32,5,1350,1980);
 
+INSERT into ticket_priority (id, customer_type, delivery_priority) VALUES (1, 2, 0);
+INSERT into ticket_priority (id, customer_type, delivery_priority) VALUES (2, 1, 1);
+INSERT into ticket_priority (id, customer_type, delivery_priority) VALUES (3, 0, 2);
 
 INSERT into app_user(id, username, password) VALUES (
-1, 'admin', '$2a$10$0M/mFpLlG5N9NZrCvuaoAeFbE02vpl2cOnx9T7DDhqjjSSpP2Krke')
+1, 'admin', '$2a$10$0M/mFpLlG5N9NZrCvuaoAeFbE02vpl2cOnx9T7DDhqjjSSpP2Krke');
