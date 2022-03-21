@@ -3,11 +3,9 @@ server:
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
 
 spring:
-  profiles:
-    active: prod
   jpa:
     properties:
         dialect: io.github.jhipster.domain.util.FixedH2Dialect
