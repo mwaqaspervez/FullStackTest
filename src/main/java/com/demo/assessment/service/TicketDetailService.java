@@ -30,7 +30,7 @@ public class TicketDetailService implements ITicketDetailService {
     public TicketDetailResponse getTicketDetails(int page, int size) {
         Page<TicketDetail> orderPage =
                 ticketDetailRepo.findAll(PageRequest.of(page, size,
-                        Sort.by("deliveryPriority").descending()));
+                        Sort.by("ticketPriorityType").descending()));
 
         if (orderPage.isEmpty()) {
             return new TicketDetailResponse(new ArrayList<>(), 0, 0);
